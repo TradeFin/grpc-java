@@ -1,4 +1,23 @@
 description = "gRPC: Netty"
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+
+gitPublishConfig {
+    home = "~/tradefin/codebase"
+    org = "TradeFin"
+    repo = "tf-maven"
+    branch = "master"
+}
+
+task sourceJar(type: Jar) {
+    classifier "sources"
+    from sourceSets.main.allJava
+}
+
+repositories {
+    github("TradeFin", "tf-maven", "master", "releases")
+}
+
 dependencies {
     compile project(':grpc-core'),
             libraries.netty,
@@ -40,4 +59,19 @@ jmh {
     // Workaround
     // https://github.com/melix/jmh-gradle-plugin/issues/97#issuecomment-316664026
     includeTests = true
+}
+
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+            artifact sourceJar
+        }
+    }
+    repositories {
+        maven {
+            url "file://${gitPublishConfig.home}/${gitPublishConfig.org}/${gitPublishConfig.repo}/releases"
+        }
+    }
 }
